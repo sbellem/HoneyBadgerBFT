@@ -9,7 +9,7 @@ before_install:
   - cd pbc-0.5.14 
   - ./configure
   - make
-  - make install
+  - sudo make install
   - cd .. && git clone https://github.com/JHUISI/charm.git
   - cd charm && git checkout 2.7-dev
   - ./configure.sh
