@@ -27,4 +27,4 @@ install:
 
 script: pytest -v --cov=honeybadgerbft test/
 
-#after_success:
+after_success: codecov
