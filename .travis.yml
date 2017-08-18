@@ -14,10 +14,11 @@ before_install:
   - cd charm && git checkout 2.7-dev
   - ./configure.sh
   - python setup.py install
+  -- cd ..
 
 install:
   - pip install --upgrade pip
-  - pip install -e .[dev]
+  - pip install -e .[test]
 
 script: pytest -v --cov=honeybadgerbft test/
 
