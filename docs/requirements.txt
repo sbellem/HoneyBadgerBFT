@@ -1,0 +1,10 @@
+# we need this for readthedocs
+
+# jinja2 is pinned because of issue with async syntax, e.g., see:
+#  - https://github.com/pallets/jinja/issues/643,
+#  - https://github.com/pallets/jinja/issues/653
+jinja2==2.8
+sphinx
+sphinx-autobuild
+sphinxcontrib-napoleon
+sphinx_rtd_theme
