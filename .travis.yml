@@ -8,7 +8,9 @@ before_install:
   - tar -xvf pbc-0.5.14.tar.gz
   - cd pbc-0.5.14 && ./configure && make && make install
   - cd .. && git clone https://github.com/JHUISI/charm.git
-  - cd charm && git checkout 2.7-dev && ./configure.sh && python setup.py install
+  - cd charm && git checkout 2.7-dev
+  - ./configure.sh
+  - python setup.py install
 
 install:
   - pip install --upgrade pip
