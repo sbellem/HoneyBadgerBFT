@@ -3,7 +3,7 @@ The Honey Badger of BFT Protocols
 
 <img width=200 src="http://i.imgur.com/wqzdYl4.png"/>
 
-[![Travis branch](https://img.shields.io/travis/sbellem/honeybadgerbft/softeng-dev.svg)](https://travis-ci.org/sbellem/honeybadgerbft)
+[![Travis branch](https://img.shields.io/travis/sbellem/HoneyBadgerBFT/softeng-dev.svg)](https://travis-ci.org/sbellem/honeybadgerbft)
 [![Codecov branch](https://img.shields.io/codecov/c/github/sbellem/honeybadgerbft/softeng-dev.svg)](https://codecov.io/github/sbellem/honeybadgerbft?branch=softeng-dev)
 
 Most fault tolerant protocols (including RAFT, PBFT, Zyzzyva, Q/U) don't guarantee good performance when there are Byzantine faults.
