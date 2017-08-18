@@ -22,7 +22,7 @@ before_install:
   - cd ..
 
 install:
-  - pip install --upgrade pip
+  - pip install --upgrade pip codecov
   - pip install -e .[test]
 
 script: pytest -v --cov=honeybadgerbft test/
