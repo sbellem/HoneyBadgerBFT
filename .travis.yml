@@ -1,0 +1,19 @@
+language: python
+python: 2.7
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get -y install flex bison libgmp-dev libmpc-dev
+  - wget https://crypto.stanford.edu/pbc/files/pbc-0.5.14.tar.gz
+  - tar -xvf pbc-0.5.14.tar.gz
+  - cd pbc-0.5.14 && ./configure && make && make install
+  - cd .. && git clone https://github.com/JHUISI/charm.git
+  - cd charm && git checkout 2.7-dev && ./configure.sh && python setup.py install
+
+install:
+  - pip install --upgrade pip
+  - pip install -e .[dev]
+
+script: pytest -v --cov=honeybadgerbft test/
+
+#after_success:
