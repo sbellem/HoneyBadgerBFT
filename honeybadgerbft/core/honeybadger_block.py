@@ -36,10 +36,24 @@ def honeybadger_block(pid, N, f, PK, SK, propose_in, acs_in, acs_out, tpke_bcast
     :param acs_out: a blocking function that returns an array of ciphertexts
     :param tpke_send:
     :param tpke_recv:
-    :return:
+    :return: tuple of decrypted transactions, i.e.: block of transactions
     """
 
     # Broadcast inputs are of the form (tenc(key), enc(key, transactions))
+
+    ###########################################################################
+    #                                                                         #
+    # STEP 1: RANDOM SELECTION AND ENCRYPTION                                 #
+    # =======================================                                 #
+    #                                                                         #
+    # 1. let proposed be a random selection of floor(B/N) transactions from   #
+    # the first B elements of buf                                             #
+    # 2. encrypt x := TPKE.Enc(PK, proposed)                                  #
+    #                                                                         #
+    # .. note:: ``proposed`` is given by teh callable ``propose_in``          #
+    #                                                                         #
+    #                                                                         #
+    ###########################################################################
 
     # Threshold encrypt
     # TODO: check that propose_in is the correct length, not too large
@@ -48,6 +62,16 @@ def honeybadger_block(pid, N, f, PK, SK, propose_in, acs_in, acs_out, tpke_bcast
     ciphertext = tpke.encrypt(key, prop)
     tkey = PK.encrypt(key)
 
+    ###########################################################################
+    #                                                                         #
+    # STEP 2: AGREEMENT ON CIPHERTEXTS                                        #
+    # ================================                                        #
+    #                                                                         #
+    # 1. pass x as input to ACS[r] //see ACS algorithm (figure 4 in paper)    #
+    # 2. receive {v for j in N if j in S}, where S in [1..N], from ACS[r]     #
+    #                                                                         #
+    #                                                                         #
+    ###########################################################################
     import cPickle as pickle
     to_acs = pickle.dumps( (serialize_UVW(tkey), ciphertext) )
     acs_in( to_acs )
@@ -58,6 +82,21 @@ def honeybadger_block(pid, N, f, PK, SK, propose_in, acs_in, acs_out, tpke_bcast
     assert len([_ for _ in vall if _ is not None]) >= N - f  # This many must succeed
 
     # print pid, 'Received from acs:', vall
+
+    ###########################################################################
+    #                                                                         #
+    # STEP 3: DECRYPTION                                                      #
+    # ==================                                                      #
+    #                                                                         #
+    # for j in S:                                                             #
+    #   e_j = TPKE.DecShare(SK_i, v_j)                                        #
+    #   multicast DEC(r, j, i, e_j)                                           #
+    #   wait to receive at least f + 1 messages of the form                   #
+    #   DEC(r, j, k, e_(j,k))                                                 #
+    #   decode y_j = TPKE.Dec(PK, {(k, e_(j,k))})                             #
+    #                                                                         #
+    #                                                                         #
+    ###########################################################################
 
     # Broadcast all our decryption shares
     my_shares = []

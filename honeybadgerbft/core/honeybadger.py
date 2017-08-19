@@ -87,7 +87,11 @@ class HoneyBadgerBFT():
 
 
     def _run_round(self, r, tx_to_send, send, recv):
-        ''' '''
+        """Returns a block of transaction.
+
+        QUESTION: Are the transactions sorted in a canonical order?
+
+        """
         # Unique sid for each round
         sid = self.sid + ':' + str(r)
         pid = self.pid
