@@ -9,8 +9,10 @@ from honeybadgerbft.core.honeybadger_block import honeybadger_block
 from honeybadgerbft.crypto.threshenc import tpke
 
 class HoneyBadgerBFT():
+    ''' '''
 
     def __init__(self, sid, pid, B, N, f, sPK, sSK, ePK, eSK, send, recv):
+        ''' '''
         self.sid = sid
         self.pid = pid
         self.B = B
@@ -29,14 +31,17 @@ class HoneyBadgerBFT():
 
 
     def submit_tx(self, tx):
+        ''' '''
         print 'submit_tx', self.pid, tx
         self.transaction_buffer.append(tx)
 
     def run(self):
+        ''' '''
         def _recv():
+            ''' '''
             while True:
                 (sender, (r, msg)) = self._recv()
-            
+
                 # Maintain an *unbounded* recv queue for each epoch
                 if r not in self._per_round_recv:
                     # Buffer this message
@@ -82,6 +87,7 @@ class HoneyBadgerBFT():
 
 
     def _run_round(self, r, tx_to_send, send, recv):
+        ''' '''
         # Unique sid for each round
         sid = self.sid + ':' + str(r)
         pid = self.pid
@@ -89,6 +95,7 @@ class HoneyBadgerBFT():
         f = self.f
 
         def broadcast(o):
+            ''' '''
             for j in range(N): send(j, o)
 
         # Launch ACS, ABA, instances
@@ -104,7 +111,9 @@ class HoneyBadgerBFT():
         print pid, r, 'tx_to_send:', tx_to_send
 
         def _setup(j):
+            ''' '''
             def coin_bcast(o):
+                ''' '''
                 broadcast(('ACS_COIN', j, o))
 
             coin_recvs[j] = Queue()
@@ -113,6 +122,7 @@ class HoneyBadgerBFT():
                                coin_bcast, coin_recvs[j].get)
 
             def aba_bcast(o):
+                ''' '''
                 broadcast(('ACS_ABA', j, o))
 
             aba_recvs[j] = Queue()
@@ -121,6 +131,7 @@ class HoneyBadgerBFT():
                                aba_bcast, aba_recvs[j].get)
 
             def rbc_send(k, o):
+                ''' '''
                 send(k, ('ACS_RBC', j, o))
 
             # Only leader gets input
@@ -135,6 +146,7 @@ class HoneyBadgerBFT():
 
         # One instance of TPKE
         def tpke_bcast(o):
+            ''' '''
             broadcast(('TPKE', 0, o))
 
         tpke_recv = Queue()
@@ -143,8 +155,9 @@ class HoneyBadgerBFT():
         acs = gevent.spawn(commonsubset, pid, N, f, rbc_outputs,
                            [_.put_nowait for _ in aba_inputs],
                            [_.get for _ in aba_outputs])
-        
+
         def _recv():
+            ''' '''
             while True:
                 (sender, (tag, j, msg)) = recv()
                 if   tag == 'ACS_COIN': coin_recvs[j].put_nowait((sender,msg))
