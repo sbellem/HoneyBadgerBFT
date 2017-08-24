@@ -9,3 +9,24 @@ ec2/logs_old/*
 ec2/hosts
 *_keys
 *.keys
+
+# Sphinx documentation
+docs/_build/
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
