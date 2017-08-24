@@ -18,65 +18,23 @@ rate the network supports.
 from setuptools import setup
 
 
-install_requires = [
-    'gevent',
-    'gmpy2',
-    'pysocks',
-    'pycrypto',
-    'ecdsa',
-    'zfec',
-    'gipc',
-]
-
-tests_require = [
-    'coverage',
-    'flake8',
-    'pytest',
-    'pytest-cov',
-    'pytest-sugar',
-    'nose2',
-]
-
-dev_require = [
-    'ipdb',
-    'ipython~=5.3',
-]
-
-docs_require = [
-    # jinja2 is pinned because of issue with async syntax, e.g., see:
-    #  - https://github.com/pallets/jinja/issues/643,
-    #  - https://github.com/pallets/jinja/issues/653
-    'jinja2==2.8',
-    'Sphinx',
-    'sphinx-autobuild',
-    'sphinx_rtd_theme',
-]
-
 setup(
     name='honeybadgerbft',
-    version='0.1.0',
+    version='0.0.0',
     description='The Honey Badger of BFT Protocols',
     long_description=__doc__,
     author="Andrew Miller et al.",
     url='https://github.com/amiller/HoneyBadgerBFT',
     packages=['honeybadgerbft'],
     package_dir={'honeybadgerbft': 'honeybadgerbft'},
-    include_package_data=True,
-    install_requires=install_requires,
     license='CRAPL',
     zip_safe=False,
     keywords='distributed systems, cryptography, byzantine fault tolerance',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Programming Language :: Python :: 2 :: Only',
         'Programming Language :: Python :: 2.7',
     ],
-    test_suite='tests',
-    extras_require={
-        'test': tests_require,
-        'dev': dev_require + tests_require + docs_require,
-        'docs': docs_require,
-    },
 )
