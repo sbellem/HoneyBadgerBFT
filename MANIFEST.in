@@ -1,0 +1,7 @@
+include CRAPL-LICENSE.txt
+
+recursive-exclude test *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude honeybadgerbft/core *
+recursive-exclude honeybadgerbft/crypto *
