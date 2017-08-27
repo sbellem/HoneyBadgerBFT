@@ -25,6 +25,6 @@ install:
   - pip install --upgrade pip codecov
   - pip install -e .[test]
 
-script: pytest -v --cov=honeybadgerbft test/
+script: pytest -v --cov=honeybadgerbft test/ -s
 
 after_success: codecov
