@@ -40,6 +40,8 @@ class HoneyBadgerBFT():
                 # Maintain an *unbounded* recv queue for each epoch
                 if r not in self._per_round_recv:
                     # Buffer this message
+                    print ('Received message from new round meanwhile current'
+                           ' round is still on going.')
                     assert r >= self.round
                     self._per_round_recv[r] = Queue()
 
