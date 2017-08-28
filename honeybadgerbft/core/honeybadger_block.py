@@ -53,8 +53,9 @@ def honeybadger_block(pid, N, f, PK, SK, propose_in, acs_in, acs_out, tpke_bcast
 
     # Wait for the corresponding ACS to finish
     vall = acs_out()
-    assert len(vall) == N
-    assert len([_ for _ in vall if _ is not None]) >= N - f  # This many must succeed
+    assert len(vall) == N   # pragma: no cover
+    # This many must succeed
+    assert len([_ for _ in vall if _ is not None]) >= N - f     # pragma: no cover
 
     # print pid, 'Received from acs:', vall
 
@@ -82,7 +83,7 @@ def honeybadger_block(pid, N, f, PK, SK, propose_in, acs_in, acs_out, tpke_bcast
             continue
         shares_received[j] = shares
 
-    assert len(shares_received) >= f+1
+    assert len(shares_received) >= f+1  # pragma: no cover
     # TODO: Accountability
     # If decryption fails at this point, we will have evidence of misbehavior,
     # but then we should wait for more decryption shares and try again
