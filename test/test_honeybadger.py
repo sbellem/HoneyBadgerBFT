@@ -9,6 +9,9 @@ from honeybadgerbft.core.honeybadger import HoneyBadgerBFT
 from honeybadgerbft.crypto.threshsig.boldyreva import dealer
 from honeybadgerbft.crypto.threshenc import tpke
 from collections import defaultdict
+from gevent.hub import LoopExit
+from pytest import raises
+
 
 def simple_router(N, maxdelay=0.005, seed=None):
     """Builds a set of connected channels, with random delay
@@ -91,3 +94,24 @@ from nose2.tools import params
 def test_honeybadger():
     _test_honeybadger()
 
+
+def test_round_error():
+
+    def mock_recv():
+        sender, epoch = 1, 8
+        return sender, (epoch, 'msg')
+
+    N, f, seed = 4, 1, None
+    sPK, sSKs = dealer(N, f+1, seed=seed)
+    ePK, eSKs = tpke.dealer(N, f+1)
+    rnd = random.Random(seed)
+    router_seed = rnd.random()
+    sends, recvs = simple_router(N, seed=router_seed)
+
+    badger = HoneyBadgerBFT(
+        'sid', 0, 1, N, f, sPK, sSKs[0], ePK, eSKs[0], sends[0], mock_recv)
+    badger.round = 20
+    badger.transaction_buffer.append('<[HBBFT Input %d]>' % 0)
+
+    with raises(LoopExit):
+        badger.run()
