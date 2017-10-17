@@ -9,14 +9,14 @@ import gc
 import traceback
 import cPickle as pickle
 import struct
-from ..ecdsa.ecdsa_ssl import KEY
+from honeybadgerbft.crypto.ecdsa.ecdsa_ssl import KEY
 import os
-from ..commoncoin import boldyreva as boldyreva
-from ..threshenc.tpke import serialize, deserialize0, deserialize1, deserialize2, TPKEPublicKey, TPKEPrivateKey, group
+from honeybadgerbft.crypto.threshsig import boldyreva as boldyreva
+from honeybadgerbft.crypto.threshenc.tpke import serialize, deserialize0, deserialize1, deserialize2, TPKEPublicKey, TPKEPrivateKey, group
 
 from io import BytesIO
 
-nameList = open(os.path.dirname(os.path.abspath(__file__)) + '/../test/names.txt','r').read().strip().split('\n')
+nameList = open(os.path.dirname(os.path.abspath(__file__)) + '/../experiments/names.txt','r').read().strip().split('\n')
 
 TR_SIZE = 250
 SHA_LENGTH = 32

@@ -5,18 +5,18 @@ monkey.patch_all()
 
 from gevent.queue import *
 from gevent import Greenlet
-from ..core.utils import bcolors, mylog, initiateThresholdSig
-from ..core.includeTransaction import honestParty
-from ..core.bkr_acs import initBeforeBinaryConsensus
+from misc.utils import bcolors, mylog, initiateThresholdSig
+from misc.includeTransaction import honestParty
+#from misc.bkr_acs import initBeforeBinaryConsensus
 import gevent
 import os
-from ..core.utils import myRandom as random
-from ..core.utils import ACSException, checkExceptionPerGreenlet, getSignatureCost, encodeTransaction, getKeys,  \
+from misc.utils import myRandom as random
+from misc.utils import ACSException, checkExceptionPerGreenlet, getSignatureCost, encodeTransaction, getKeys,  \
     deepEncode, deepDecode, randomTransaction, initiateECDSAKeys, initiateThresholdEnc, finishTransactionLeap
 
 import time
 import math
-from ..commoncoin.boldyreva_gipc import initialize as initializeGIPC
+from honeybadgerbft.crypto.threshsig.boldyreva_gipc import initialize as initializeGIPC
 
 USE_DEEP_ENCODE = True
 QUIET_MODE = True
@@ -124,7 +124,7 @@ def client_test_freenet(N, t, options):
 
     while True:
     #if True:
-        initBeforeBinaryConsensus()
+        #initBeforeBinaryConsensus()
         ts = []
         controlChannels = [Queue() for _ in range(N)]
         transactionSet = set([encodeTransaction(randomTransaction()) for trC in range(int(options.tx))])  # we are using the same one

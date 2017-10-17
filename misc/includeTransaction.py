@@ -1,14 +1,14 @@
-__author__ = 'aluex' 
+__author__ = 'aluex'
 
 from gevent import Greenlet
 from gevent.queue import Queue, Empty
-from bkr_acs import acs
+from honeybadgerbft.core.commonsubset import commonsubset
 from utils import mylog, MonitoredInt, callBackWrap, greenletFunction, \
     greenletPacker, getEncKeys, Transaction, getECDSAKeys, sha1hash, TR_SIZE
 from collections import defaultdict
 import zfec
 import hashlib
-from ..threshenc.tpke import encrypt, decrypt
+from honeybadgerbft.crypto.threshenc.tpke import encrypt, decrypt
 from utils import serializeEnc, deserializeEnc, ENC_SERIALIZED_LENGTH
 import random
 import itertools
@@ -254,8 +254,8 @@ def includeTransaction(pid, N, t, setToInclude, broadcast, receive, send):
 
     greenletPacker(Greenlet(consensusBroadcast, pid, N, t, setToInclude, make_bc_br(pid), CBChannel.get, outputChannel, make_bc_send(pid)),
         'includeTransaction.consensusBroadcast', (pid, N, t, setToInclude, broadcast, receive)).start()
-    greenletPacker(Greenlet(callBackWrap(acs, callbackFactoryACS()), pid, N, t, monitoredIntList, make_acs_br(pid), ACSChannel.get),
-        'includeTransaction.callBackWrap(acs, callbackFactoryACS())', (pid, N, t, setToInclude, broadcast, receive)).start()
+    greenletPacker(Greenlet(callBackWrap(commonsubset, callbackFactoryACS()), pid, N, t, monitoredIntList, make_acs_br(pid), ACSChannel.get),
+        'includeTransaction.callBackWrap(commonsubset, callbackFactoryACS())', (pid, N, t, setToInclude, broadcast, receive)).start()
 
     commonSet = locker.get()
     return commonSet, TXSet
