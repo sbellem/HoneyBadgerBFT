@@ -25,8 +25,19 @@ class HoneyBadgerBFT():
         (:math:`\mathsf{TPKE}`) scheme.
     :param str eSK: Signing key of the threshold encryption
         (:math:`\mathsf{TPKE}`) scheme.
-    :param send:
-    :param recv:
+    :param send: a function that takes as first parameter the unique
+        index identifying a node and the data to send (a tuple -- see
+        code). The function needs to be capable to somehow map the
+        index to an ip address. An alternative would be to pass the
+        list of hosts instead of ``N`` and to then infer the ``N`` from
+        ``len(hosts)``.
+    :param recv: A function that receives messages from other nodes::
+
+            (sender, (r, (tag, j, msg))) = recv()
+
+        The format of the sender needs to be figured out.
+
+
     """
 
     def __init__(self, sid, pid, B, N, f, sPK, sSK, ePK, eSK, send, recv):
@@ -98,7 +109,12 @@ class HoneyBadgerBFT():
             send_r = _make_send(r)
             recv_r = self._per_round_recv[r].get
             new_tx = self._run_round(r, tx_to_send[0], send_r, recv_r)
+
+            ###################################################################
+            # BEGIN OUTPUT POINT
             print 'new_tx:', new_tx
+            # END OUTPUT POINT
+            ###################################################################
 
             # Remove all of the new transactions from the buffer
             self.transaction_buffer = [_tx for _tx in self.transaction_buffer if _tx not in new_tx]
