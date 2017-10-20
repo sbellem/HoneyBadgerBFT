@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  honeybadger:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/local/src/HoneyBadgerBFT
+    command: pytest -v --cov=honeybadgerbft test/
+  bdocs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/local/src/HoneyBadgerBFT
+    command: make -C docs html
+  vdocs:
+    image: nginx
+    ports:
+      - '52032:80'
+    volumes:
+      - ./docs/_build/html:/usr/share/nginx/html
+  hb-int:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo3
+    volumes:
+      - .:/usr/local/src/HoneyBadgerBFT
+    command: pytest -v --cov=honeybadgerbft test/
