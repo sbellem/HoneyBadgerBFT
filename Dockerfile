@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM python:2.7.14
 
 # Default cluster arguments. Override with "-e"
 #
@@ -9,12 +9,12 @@ ENV t 2
 # maximum number of transactions committed in a block:
 ENV B 16
 
-RUN apt-get update
-RUN apt-get install -y software-properties-common
-RUN apt-get update
-RUN apt-get -y install python-gevent git wget python-pip python-dev python-gmpy2 flex bison libgmp-dev libssl-dev
+#RUN apt-get -y install python-gevent git wget python-pip python-dev python-gmpy2
+RUN apt-get update && apt-get -y install bison flex libgmp-dev libmpc-dev
+RUN apt-get update && apt-get -y install libffi-dev libyaml-cpp-dev
 
-RUN pip install PySocks pycrypto ecdsa zfec gipc nose2 ethereum
+RUN pip install ecdsa gevent gipc gmpy2 nose2 pycrypto pysocks zfec
+RUN pip install ethereum
 
 RUN wget https://crypto.stanford.edu/pbc/files/pbc-0.5.14.tar.gz
 RUN tar -xvf pbc-0.5.14.tar.gz
@@ -23,9 +23,10 @@ RUN cd pbc-0.5.14 && ./configure && make && make install
 RUN git clone https://github.com/JHUISI/charm.git
 RUN cd charm && git checkout 2.7-dev && ./configure.sh && python setup.py install
 
-RUN apt-get -y install libgmp-dev libgnutls-dev tmux curl
+RUN apt-get -y install libgnutls28-dev tmux curl libgcrypt20-dev
 RUN curl -O https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
 RUN tar -xvf go1.8.linux-amd64.tar.gz
+
 RUN mv go /usr/local
 RUN mkdir /go
 ENV GOPATH /go
