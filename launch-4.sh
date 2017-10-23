@@ -1,5 +1,5 @@
 #!/bin/bash
-killall -9 node
+killall5 -9 node
 
 declare -A baseport    # These must be kept up to date with contlist!
 baseport[mnt224]=9000
@@ -12,7 +12,7 @@ for curve in mnt224 ss512
 do
   for x in `seq 1 4`
   do
-    rm -r $DKG/$curve/node$x
+    rm -rf $DKG/$curve/node$x
     mkdir -p $DKG/$curve/node$x
     ln -s $DKG/../src/node $DKG/$curve/node$x/
     ln -s $DKG/certs $DKG/$curve/node$x/
