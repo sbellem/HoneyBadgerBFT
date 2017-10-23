@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  node1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./honeybadgerbft:/usr/local/src/HoneyBadgerBFT/honeybadgerbft
+      - ./node1:/usr/local/src/HoneyBadgerBFT/node1
+      - ./ss512.docker.contlist:/usr/local/src/HoneyBadgerBFT/node1/contlist
+      - ./ss512.system.param:/usr/local/src/HoneyBadgerBFT/node1/system.param
+      - ./ss512.pairing.param:/usr/local/src/HoneyBadgerBFT/node1/pairing.param
+    ports:
+      - 9001
+      - 9501
+    working_dir: /usr/local/src/HoneyBadgerBFT/node1
+    command: ../dkg/DKG_0.8.0/src/node 9501 certs/1.pem certs/1-key.pem contlist 0 0 0&
+  node2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./honeybadgerbft:/usr/local/src/HoneyBadgerBFT/honeybadgerbft
+      - ./node2:/usr/local/src/HoneyBadgerBFT/node2
+      - ./ss512.docker.contlist:/usr/local/src/HoneyBadgerBFT/node2/contlist
+      - ./ss512.system.param:/usr/local/src/HoneyBadgerBFT/node2/system.param
+      - ./ss512.pairing.param:/usr/local/src/HoneyBadgerBFT/node2/pairing.param
+    ports:
+      - 9002
+      - 9502
+    working_dir: /usr/local/src/HoneyBadgerBFT/node2
+    command: ../dkg/DKG_0.8.0/src/node 9502 certs/2.pem certs/2-key.pem contlist 0 0 0&
+  node3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./honeybadgerbft:/usr/local/src/HoneyBadgerBFT/honeybadgerbft
+      - ./node3:/usr/local/src/HoneyBadgerBFT/node3
+      - ./ss512.docker.contlist:/usr/local/src/HoneyBadgerBFT/node3/contlist
+      - ./ss512.system.param:/usr/local/src/HoneyBadgerBFT/node3/system.param
+      - ./ss512.pairing.param:/usr/local/src/HoneyBadgerBFT/node3/pairing.param
+    ports:
+      - 9003
+      - 9503
+    working_dir: /usr/local/src/HoneyBadgerBFT/node3
+    command: ../dkg/DKG_0.8.0/src/node 9503 certs/3.pem certs/3-key.pem contlist 0 0 0&
+  node4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./honeybadgerbft:/usr/local/src/HoneyBadgerBFT/honeybadgerbft
+      - ./node4:/usr/local/src/HoneyBadgerBFT/node4
+      - ./ss512.docker.contlist:/usr/local/src/HoneyBadgerBFT/node4/contlist
+      - ./ss512.system.param:/usr/local/src/HoneyBadgerBFT/node4/system.param
+      - ./ss512.pairing.param:/usr/local/src/HoneyBadgerBFT/node4/pairing.param
+    ports:
+      - 9004
+      - 9504
+    working_dir: /usr/local/src/HoneyBadgerBFT/node4
+    command: ../dkg/DKG_0.8.0/src/node 9504 certs/4.pem certs/4-key.pem contlist 0 0 0&

@@ -9,3 +9,8 @@ ec2/logs_old/*
 ec2/hosts
 *_keys
 *.keys
+
+*.log
+*keys.out
+node*/*.param
+node*/contlist
