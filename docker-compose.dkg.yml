@@ -16,6 +16,9 @@ services:
       - 9501
     working_dir: /usr/local/src/HoneyBadgerBFT/node1
     command: ../dkg/DKG_0.8.0/src/node 9501 certs/1.pem certs/1-key.pem contlist 0 0 0&
+    #networks:
+    #  nodes:
+    #    ipv4_address: 172.16.238.10
   node2:
     build:
       context: .
@@ -31,6 +34,9 @@ services:
       - 9502
     working_dir: /usr/local/src/HoneyBadgerBFT/node2
     command: ../dkg/DKG_0.8.0/src/node 9502 certs/2.pem certs/2-key.pem contlist 0 0 0&
+    #networks:
+    #  nodes:
+    #    ipv4_address: 172.16.238.20
   node3:
     build:
       context: .
@@ -46,6 +52,9 @@ services:
       - 9503
     working_dir: /usr/local/src/HoneyBadgerBFT/node3
     command: ../dkg/DKG_0.8.0/src/node 9503 certs/3.pem certs/3-key.pem contlist 0 0 0&
+    #networks:
+    #  nodes:
+    #    ipv4_address: 172.16.238.30
   node4:
     build:
       context: .
@@ -61,3 +70,15 @@ services:
       - 9504
     working_dir: /usr/local/src/HoneyBadgerBFT/node4
     command: ../dkg/DKG_0.8.0/src/node 9504 certs/4.pem certs/4-key.pem contlist 0 0 0&
+    #networks:
+    #  nodes:
+    #    ipv4_address: 172.16.238.40
+
+    #networks:
+    #  nodes:
+    #    driver: bridge
+    #    #enable_ipv6: true
+    #    ipam:
+    #      driver: default
+    #      config:
+    #      - subnet: 172.16.238.0/24
