@@ -13,7 +13,7 @@ def test_boldyreva():
     for SK in SKs:
         sigs[SK.i] = SK.sign(h)
 
-    SS = range(PK.l)
+    SS = list(range(PK.l))
     for i in range(10):
         random.shuffle(SS)
         S = set(SS[:PK.k])

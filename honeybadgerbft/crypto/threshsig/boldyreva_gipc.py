@@ -1,4 +1,5 @@
-from boldyreva import dealer, serialize, deserialize1, deserialize2
+from .boldyreva import dealer, serialize, deserialize1, deserialize2
+from .boldyreva_pool import _combine_and_verify
 import gevent
 import gipc
 import time
@@ -72,16 +73,17 @@ def pool_test():
         threads = []
         for i in range(100):
             threads.append(gevent.spawn(combine_and_verify, h, sigs))
-        print 'launched', time.time()
+        print('launched', time.time())
         gevent.joinall(threads)
         #for p in promises: assert p.get() == True
-        print 'done', time.time()
+        print('done', time.time())
 
     # Combine 100 times
     if 0:
-        print 'launched', time.time()
+        print('launched', time.time())
         for i in range(10):
+            # TODO import _combine_and_verify and define _h
             _combine_and_verify(_h, sigs2)
-        print 'done', time.time()
+        print('done', time.time())
 
-    print 'work done'
+    print('work done')

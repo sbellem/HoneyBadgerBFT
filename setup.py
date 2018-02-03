@@ -24,9 +24,9 @@ install_requires = [
     'pysocks',
     'pycrypto',
     'ecdsa',
-    'zfec',
+    'zfec>=1.5.0',
     'gipc',
-    'charm-crypto>=0.5',
+    'charm-crypto>=0.50',
 ]
 
 tests_require = [
@@ -40,14 +40,10 @@ tests_require = [
 
 dev_require = [
     'ipdb',
-    'ipython~=5.3',
+    'ipython',
 ]
 
 docs_require = [
-    # jinja2 is pinned because of issue with async syntax, e.g., see:
-    #  - https://github.com/pallets/jinja/issues/643,
-    #  - https://github.com/pallets/jinja/issues/653
-    'jinja2==2.8',
     'Sphinx',
     'sphinx-autobuild',
     'sphinx_rtd_theme',
@@ -71,8 +67,8 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2 :: Only',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.6',
     ],
     test_suite='tests',
     extras_require={
@@ -81,6 +77,6 @@ setup(
         'docs': docs_require,
     },
     dependency_links=[
-        'git+https://github.com/JHUISI/charm.git@2.7-dev#egg=0.5',
+        'git+https://github.com/JHUISI/charm.git@dev#egg=0.50',
     ]
 )

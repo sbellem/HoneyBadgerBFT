@@ -1,14 +1,18 @@
 import unittest
+from functools import reduce
 import gevent
 import random
 from gevent.event import Event
 from gevent.queue import Queue
 import honeybadgerbft.core.honeybadger
-reload(honeybadgerbft.core.honeybadger)
+#reload(honeybadgerbft.core.honeybadger)
 from honeybadgerbft.core.honeybadger import HoneyBadgerBFT
 from honeybadgerbft.crypto.threshsig.boldyreva import dealer
 from honeybadgerbft.crypto.threshenc import tpke
 from collections import defaultdict
+
+from pytest import mark
+
 
 def simple_router(N, maxdelay=0.005, seed=None):
     """Builds a set of connected channels, with random delay
@@ -89,6 +93,7 @@ def _test_honeybadger(N=4, f=1, seed=None):
 
 from nose2.tools import params
 
+#@mark.skip('python 3 problem with gevent')
 def test_honeybadger():
     _test_honeybadger()
 

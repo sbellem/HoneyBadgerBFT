@@ -35,7 +35,7 @@ def binaryagreement(sid, pid, N, f, coin, input, decide, broadcast, receive):
                 _, r, v = msg
                 assert v in (0,1)
                 if sender in est_values[r][v]:
-                    print 'Redundant EST received', msg
+                    print('Redundant EST received', msg)
                     raise
                     continue
 
@@ -55,7 +55,7 @@ def binaryagreement(sid, pid, N, f, coin, input, decide, broadcast, receive):
                 _, r, v = msg
                 assert v in (0,1)
                 if sender in aux_values[r][v]:
-                    print 'Redundant AUX received', msg
+                    print('Redundant AUX received', msg)
                     raise
                     continue
 
@@ -94,15 +94,15 @@ def binaryagreement(sid, pid, N, f, coin, input, decide, broadcast, receive):
             # Block until at least N-f AUX values are received
             if 1 in bin_values[r] and len(aux_values[r][1]) >= N - f:
                 values = set((1,))
-                #print '[sid:%s] [pid:%d] VALUES 1 %d' % (sid,pid,r)
+                #print('[sid:%s] [pid:%d] VALUES 1 %d' % (sid,pid,r))
                 break
             if 0 in bin_values[r] and len(aux_values[r][0]) >= N - f:
                 values = set((0,))
-                #print '[sid:%s] [pid:%d] VALUES 0 %d' % (sid,pid,r)
+                #print('[sid:%s] [pid:%d] VALUES 0 %d' % (sid,pid,r))
                 break
             if sum(len(aux_values[r][v]) for v in bin_values[r]) >= N - f:
                 values = set((0,1))
-                #print '[sid:%s] [pid:%d] VALUES BOTH %d' % (sid,pid,r)
+                #print('[sid:%s] [pid:%d] VALUES BOTH %d' % (sid,pid,r))
                 break
             bv_signal.clear()
             bv_signal.wait()
@@ -116,7 +116,7 @@ def binaryagreement(sid, pid, N, f, coin, input, decide, broadcast, receive):
                 if already_decided is None:
                     already_decided = v
                     decide(v)
-                    #print '[sid:%s] [pid:%d] DECIDED %d in round %d' % (sid,pid,v,r)
+                    #print('[sid:%s] [pid:%d] DECIDED %d in round %d' % (sid,pid,v,r))
                 elif already_decided == v:
                     # Here corresponds to a proof that if one party
                     # decides at round r, then in all the following
@@ -125,7 +125,7 @@ def binaryagreement(sid, pid, N, f, coin, input, decide, broadcast, receive):
                     # party is a party who has decided but no enough
                     # peers to help him end the loop.  Lemma: # of
                     # abandoned party <= t
-                    #print '[sid:%s] [pid:%d] QUITTING in round %d' % (sid,pid,r)
+                    #print('[sid:%s] [pid:%d] QUITTING in round %d' % (sid,pid,r)))
                     _thread_recv.kill()
                     return
                 est = v

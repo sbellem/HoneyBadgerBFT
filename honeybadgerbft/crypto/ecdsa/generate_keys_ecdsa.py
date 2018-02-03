@@ -1,6 +1,6 @@
-from ecdsa_ssl import *
+from .ecdsa_ssl import *
 import argparse
-import cPickle
+import pickle
 
 def main():
     """ """
@@ -13,7 +13,7 @@ def main():
         key = KEY()
         key.generate()
         keylist.append(key.get_secret())
-    print cPickle.dumps(keylist)
+    print(pickle.dumps(keylist))
 
 if __name__ == '__main__':
     main()

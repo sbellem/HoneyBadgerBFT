@@ -12,7 +12,7 @@ from honeybadgerbft.core.reliablebroadcast import hash, merkleTree, getMerkleBra
 ### Merkle tree
 def test_merkletree0():
     mt = merkleTree(["hello"])
-    assert mt == ["", hash("hello")]
+    assert mt == [b'', hash("hello")]
 
 def test_merkletree1():
     strList = ["hello","hi","ok"]
@@ -28,7 +28,7 @@ def test_merkletree1():
 def test_zfec1():
     K = 3
     N = 10
-    m = "hello this is a test string"
+    m = b"hello this is a test string"
     stripes = encode(K, N, m)
     assert decode(K, N, stripes) == m
     _s = list(stripes)
@@ -47,9 +47,9 @@ def simple_router(N, maxdelay=0.01, seed=None):
     """
     rnd = random.Random(seed)
     #if seed is not None: print 'ROUTER SEED: %f' % (seed,)
-    
+
     queues = [Queue() for _ in range(N)]
-    
+
     def makeSend(i):
         def _send(j, o):
             delay = rnd.random() * maxdelay
@@ -57,14 +57,14 @@ def simple_router(N, maxdelay=0.01, seed=None):
             gevent.spawn_later(delay, queues[j].put, (i,o))
             #queues[j].put((i, o))
         return _send
-    
+
     def makeRecv(j):
         def _recv():
             (i,o) = queues[j].get()
             #print 'RECV %8s [%2d -> %2d]' % (o[0], i, j)
             return (i,o)
         return _recv
-        
+
     return ([makeSend(i) for i in range(N)],
             [makeRecv(j) for j in range(N)])
 
@@ -84,12 +84,13 @@ def _test_rbc1(N=4, f=1, leader=None, seed=None):
         t.start()
         threads.append(t)
 
-    m = "Hello! This is a test message."
+    m = b"Hello! This is a test message."
     leader_input.put(m)
     gevent.joinall(threads)
     assert [t.value for t in threads] == [m]*N
 
 
+#@mark.skip('python 3 problem with gevent')
 @mark.parametrize('N,f', ((4, 1), (5, 1), (8, 2)))
 def test_rbc1(N, f):
     for i in range(20):
@@ -113,10 +114,10 @@ def _test_rbc2(N=4, f=1, leader=None, seed=None):
         t.start()
         threads.append(t)
 
-    m = "Hello!asdfasdfasdfasdfasdfsadf"
+    m = b"Hello!asdfasdfasdfasdfasdfsadf"
     leader_input.put(m)
     gevent.sleep(0)  # Let the leader get out its first message
-    
+
     # Crash f of the nodes
     crashed = set()
     #print 'Leader:', leader
@@ -130,6 +131,8 @@ def _test_rbc2(N=4, f=1, leader=None, seed=None):
     for i,t in enumerate(threads):
         if i not in crashed: assert t.value == m
 
+
+#@mark.skip('python 3 problem with gevent')
 def test_rbc2():
     for i in range(20): _test_rbc2(seed=20)
 

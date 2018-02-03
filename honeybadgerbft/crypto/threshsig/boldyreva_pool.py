@@ -1,4 +1,4 @@
-from boldyreva import dealer, serialize, deserialize1, deserialize2
+from .boldyreva import dealer, serialize, deserialize1, deserialize2
 import multiprocessing
 
 _pool_PK = None
@@ -9,7 +9,7 @@ def initialize(PK):
     from multiprocessing import Pool
     global _pool
     _pool = Pool()
-    print 'Pool started'
+    print('Pool started')
 
     global _pool_PK
     _pool_PK = PK
@@ -22,7 +22,7 @@ def _combine_and_verify(h, sigs):
         sigs[s] = deserialize1(sigs[s])
     h = deserialize1(h)
     sig = PK.combine_shares(sigs)
-    print PK.verify_signature(sig, h)
+    print(PK.verify_signature(sig, h))
     return True
 
 def combine_and_verify(h, sigs):
@@ -50,7 +50,7 @@ def pool_test():
 
     from multiprocessing import Pool
     pool = Pool()
-    print 'Pool started'
+    print('Pool started')
     import time
     sigs2 = dict((s,serialize(sigs[s])) for s in range(PK.k))
     _h = serialize(h)
@@ -60,18 +60,18 @@ def pool_test():
         promises = [pool.apply_async(_combine_and_verify,
                                      (_h, sigs2))
                     for i in range(100)]
-        print 'launched', time.time()
+        print('launched', time.time())
         for p in promises: assert p.get() == True
-        print 'done', time.time()
+        print('done', time.time())
 
     # Combine 100 times
     if 1:
-        print 'launched', time.time()
+        print('launched', time.time())
         for i in range(100):
             _combine_and_verify(_h, sigs2)
-        print 'done', time.time()
+        print('done', time.time())
 
-    print 'work done'
+    print('work done')
     pool.terminate()
     pool.join()
-    print 'ok'
+    print('ok')

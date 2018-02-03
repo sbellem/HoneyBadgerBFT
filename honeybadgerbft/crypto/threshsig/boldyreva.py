@@ -6,9 +6,12 @@ Dependencies:
     based crypto)
 
 """
+from functools import reduce
+
+# TODO pep 8
 from charm.toolbox.pairinggroup import PairingGroup,ZR,G1,G2,GT,pair
 from base64 import encodestring, decodestring
-import random
+import random   # TODO remove
 
 
 #group = PairingGroup('SS512')
@@ -64,7 +67,7 @@ class TBLSPublicKey(object):
         self.__dict__ = d
         self.VK = deserialize2(self.VK)
         self.VKs = map(deserialize2,self.VKs)
-        print "I'm being depickled"
+        print("I'm being depickled")
 
     def lagrange(self, S, j):
         """ """
@@ -107,7 +110,7 @@ class TBLSPublicKey(object):
         mul = lambda a,b: a*b
         res = reduce(mul,
                      [sig ** self.lagrange(S, j)
-                      for j,sig in sigs.iteritems()], 1)
+                      for j,sig in sigs.items()], 1)
         return res
 
 
