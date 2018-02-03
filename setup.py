@@ -70,6 +70,7 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.6',
     ],
+    python_requires='>=3.6',
     test_suite='tests',
     extras_require={
         'test': tests_require,
@@ -78,5 +79,5 @@ setup(
     },
     dependency_links=[
         'git+https://github.com/JHUISI/charm.git@dev#egg=0.50',
-    ]
+    ],
 )
