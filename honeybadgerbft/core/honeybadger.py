@@ -1,12 +1,41 @@
+from enum import Enum
+
 import gevent
 from gevent.event import Event
 from gevent.queue import Queue
+
 from honeybadgerbft.core.commoncoin import shared_coin
 from honeybadgerbft.core.binaryagreement import binaryagreement
 from honeybadgerbft.core.reliablebroadcast import reliablebroadcast
 from honeybadgerbft.core.commonsubset import commonsubset
 from honeybadgerbft.core.honeybadger_block import honeybadger_block
 from honeybadgerbft.crypto.threshenc import tpke
+from honeybadgerbft.exceptions import UnknownTagError
+
+
+class BroadcastTag(Enum):
+    ACS_COIN = 'ACS_COIN'
+    ACS_RBC = 'ACS_RBC'
+    ACS_ABA = 'ACS_ABA'
+    TPKE = 'TPKE'
+
+
+def broadcast_receiver_loop(recv_func, recv_queues):
+    while True:
+        sender, (tag, j, msg) = recv_func()
+        try:
+            recv_queue = recv_queues[tag]
+        except KeyError as exc:
+            # TODO Post python 3 port: Add exception chaining.
+            # See https://www.python.org/dev/peps/pep-3134/
+            raise UnknownTagError('Unknown tag: {}!!'.format(tag))
+            # TODO list supported tags
+
+        if tag != BroadcastTag.TPKE.value:
+            recv_queue = recv_queue[j]
+
+        recv_queue.put_nowait((sender, msg))
+
 
 class HoneyBadgerBFT():
     """HoneyBadgerBFT object used to run the protocol.
@@ -198,18 +227,13 @@ class HoneyBadgerBFT():
                            [_.put_nowait for _ in aba_inputs],
                            [_.get for _ in aba_outputs])
 
-        def _recv():
-            """Receive broadcasted value."""
-            while True:
-                (sender, (tag, j, msg)) = recv()
-                if   tag == 'ACS_COIN': coin_recvs[j].put_nowait((sender,msg))
-                elif tag == 'ACS_RBC' : rbc_recvs [j].put_nowait((sender,msg))
-                elif tag == 'ACS_ABA' : aba_recvs [j].put_nowait((sender,msg))
-                elif tag == 'TPKE'    : tpke_recv.put_nowait((sender,msg))
-                else:
-                    print 'Unknown tag!!', tag
-                    raise
-        gevent.spawn(_recv)
+        recv_queues = {
+            BroadcastTag.ACS_COIN.value: coin_recvs,
+            BroadcastTag.ACS_RBC.value: rbc_recvs,
+            BroadcastTag.ACS_ABA.value: aba_recvs,
+            BroadcastTag.TPKE.value: tpke_recv,
+        }
+        gevent.spawn(broadcast_receiver_loop, recv, recv_queues)
 
         _input = Queue(1)
         _input.put(tx_to_send)
