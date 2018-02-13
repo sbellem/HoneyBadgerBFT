@@ -1,6 +1,45 @@
 import time
 
 import gevent
+import gipc
+
+from pytest import raises
+
+
+def test_worker(tbls_public_key, tbls_private_keys):
+    from honeybadgerbft.crypto.threshsig.boldyreva_gipc import _worker
+    from honeybadgerbft.crypto.threshsig.boldyreva import serialize, deserialize1
+    r_pipe, w_pipe = gipc.pipe(duplex=True)
+    h = tbls_public_key.hash_message('hi')
+    h.initPP()
+    signature_shares = {sk.i: sk.sign(h) for sk in tbls_private_keys}
+    serialized_h = serialize(h)
+    serialized_signature_shares = {
+        k: serialize(v) for k, v in signature_shares.items()
+        if k in signature_shares.keys()[:tbls_public_key.k]
+    }
+    w_pipe.put((serialized_h, serialized_signature_shares))
+    _worker(tbls_public_key, r_pipe)
+    siganture_verification_result, serialized_signature = w_pipe.get()
+    assert siganture_verification_result is True
+    deserialized_signature_shares = {
+        k: deserialize1(v) for k, v in serialized_signature_shares.items()}
+    expected_serialized_signature = serialize(
+        tbls_public_key.combine_shares(deserialized_signature_shares))
+    assert serialized_signature == expected_serialized_signature
+
+
+def test_worker_loop(mocker, tbls_public_key):
+    from honeybadgerbft.crypto.threshsig import boldyreva_gipc
+    mocked_worker = mocker.patch.object(
+        boldyreva_gipc, '_worker', autospec=True)
+    max_calls = 3
+    mocked_worker.side_effect = ErrorAfter(max_calls)
+    r_pipe, _ = gipc.pipe(duplex=True)
+    with raises(CallableExhausted) as err:
+        boldyreva_gipc.worker_loop(tbls_public_key, r_pipe)
+    mocked_worker.call_count == max_calls + 1
+    mocked_worker.assert_called_with(tbls_public_key, r_pipe)
 
 
 def test_pool():
@@ -51,3 +90,24 @@ def test_pool():
         print 'done', time.time()
 
     print 'work done'
+
+
+class ErrorAfter(object):
+    """Callable that will raise ``CallableExhausted``
+    exception after ``limit`` calls.
+
+    credit: Igor Sobreira
+        http://igorsobreira.com/2013/03/17/testing-infinite-loops.html
+    """
+    def __init__(self, limit):
+        self.limit = limit
+        self.calls = 0
+
+    def __call__(self, x, y):
+        self.calls += 1
+        if self.calls > self.limit:
+            raise CallableExhausted
+
+
+class CallableExhausted(Exception):
+    pass

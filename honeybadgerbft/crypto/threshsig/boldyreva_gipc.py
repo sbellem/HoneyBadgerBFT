@@ -9,17 +9,23 @@ if '_procs' in globals():
     del _procs
 _procs = []
 
-def _worker(PK,pipe):
+
+def _worker(PK, pipe):
+    (h, sigs) = pipe.get()
+    sigs = dict(sigs)
+    for s in sigs:
+        sigs[s] = deserialize1(sigs[s])
+    h = deserialize1(h)
+    sig = PK.combine_shares(sigs)
+    res = PK.verify_signature(sig, h)
+    pipe.put((res, serialize(sig)))
+
+
+def worker_loop(PK, pipe):
     """ """
     while True:
-        (h, sigs) = pipe.get()
-        sigs = dict(sigs)
-        for s in sigs:
-            sigs[s] = deserialize1(sigs[s])
-        h = deserialize1(h)
-        sig = PK.combine_shares(sigs)
-        res = PK.verify_signature(sig, h)
-        pipe.put((res,serialize(sig)))
+        _worker(PK, pipe)
+
 
 myPK = None
 
@@ -30,7 +36,7 @@ def initialize(PK, size=1):
     _procs = []
     for s in range(size):
         (r,w) = gipc.pipe(duplex=True)
-        p = gipc.start_process(_worker, args=(PK, r,))
+        p = gipc.start_process(worker_loop, args=(PK, r,))
         _procs.append((p,w))
 
 def combine_and_verify(h, sigs):
