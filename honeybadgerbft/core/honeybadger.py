@@ -1,3 +1,4 @@
+from collections import namedtuple
 from enum import Enum
 
 import gevent
@@ -20,21 +21,41 @@ class BroadcastTag(Enum):
     TPKE = 'TPKE'
 
 
+BroadcastReceiverQueues = namedtuple(
+    'BroadcastReceiverQueues', ('acs_coin', 'acs_aba', 'acs_rbc', 'tpke'))
+
+
+def broadcast_receiver(recv_func, recv_queues):
+    sender, (tag, j, msg) = recv_func()
+    # FIXME what if the recv_queues are wrong?
+    # perhaps it is best to validate the tag independently and not assume
+    # that the keys in the recv_queues are all there and valid
+    # in other words: 2 possible problems:
+    #   1) invalid tag: tag not in BroadcastTag.__members__
+    #   2) invadli recv_queues: recv_queues is missing an entry
+    #       for a valid tag, using a namedtuple may simplify this
+    # TODO:
+    #if tag not in BroadcastTag.__members__
+    #    raise UnknownTagError('Unknown tag: {}!!'.format(tag))
+    try:
+        recv_queue = recv_queues[tag]
+        #recv_queue = recv_queues._asdict()[tag.lower()]
+        #recv_queue = getattr(recv_queue, tag.lower())
+    except KeyError as exc:
+        # TODO Post python 3 port: Add exception chaining.
+        # See https://www.python.org/dev/peps/pep-3134/
+        raise UnknownTagError('Unknown tag: {}!!'.format(tag))
+        # TODO list supported tags
+
+    if tag != BroadcastTag.TPKE.value:
+        recv_queue = recv_queue[j]
+
+    recv_queue.put_nowait((sender, msg))
+
+
 def broadcast_receiver_loop(recv_func, recv_queues):
     while True:
-        sender, (tag, j, msg) = recv_func()
-        try:
-            recv_queue = recv_queues[tag]
-        except KeyError as exc:
-            # TODO Post python 3 port: Add exception chaining.
-            # See https://www.python.org/dev/peps/pep-3134/
-            raise UnknownTagError('Unknown tag: {}!!'.format(tag))
-            # TODO list supported tags
-
-        if tag != BroadcastTag.TPKE.value:
-            recv_queue = recv_queue[j]
-
-        recv_queue.put_nowait((sender, msg))
+        broadcast_receiver(recv_func, recv_queues)
 
 
 class HoneyBadgerBFT():
@@ -234,6 +255,12 @@ class HoneyBadgerBFT():
             BroadcastTag.ACS_ABA.value: aba_recvs,
             BroadcastTag.TPKE.value: tpke_recv,
         }
+        #recv_queues = BroadcastReceiverQueues(
+        #    acs_coin=coin_recvs,
+        #    acs_aba=aba_recvs,
+        #    acs_rbc=rbc_recvs,
+        #    tpke=tpke_recv,
+        #)
         gevent.spawn(broadcast_receiver_loop, recv, recv_queues)
 
         _input = Queue(1)
