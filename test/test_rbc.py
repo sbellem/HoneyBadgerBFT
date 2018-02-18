@@ -78,15 +78,11 @@ def byzantine_router(N, maxdelay=0.01, seed=None, **byzargs):
     rnd = random.Random(seed)
     queues = [Queue() for _ in range(N)]
 
-    if byzargs:
-        message_type = byzargs.get('message_type')
-        byz_node_ids = byzargs.get('node_ids', ())
-
     def makeSend(i):
         def _send(j, o):
             delay = rnd.random() * maxdelay
-            if byzargs and i in byz_node_ids:
-                if o[0] == message_type:
+            if i == byzargs.get('byznode'):
+                if o[0] == byzargs.get('message_type'):
                     screwed_up = list(o)
                     if o[0] in ('VAL', 'ECHO'):
                         screwed_up[3] = 'screw it'
@@ -176,15 +172,12 @@ def test_rbc2(N, f, seed):
 @mark.parametrize('seed', range(20))
 @mark.parametrize('tag', ('VAL', 'ECHO'))
 @mark.parametrize('N,f', ((4, 1), (5, 1), (8, 2)))
-def test_rbc_with_incorrect_sender(N, f, tag, seed):
+def test_rbc_when_merkle_verify_fails(N, f, tag, seed):
     rnd = random.Random(seed)
     leader = rnd.randint(0, N-1)
-    bad_node_id = 1
-    byzargs = {
-        'node_ids': (bad_node_id,),
-        'message_type': tag,
-    }
-    sends, recvs = byzantine_router(N, seed=seed, **byzargs)
+    byznode = 1
+    sends, recvs = byzantine_router(
+        N, seed=seed, byznode=byznode, message_type=tag)
     threads = []
     leader_input = Queue(1)
     for pid in range(N):
@@ -197,7 +190,7 @@ def test_rbc_with_incorrect_sender(N, f, tag, seed):
     m = "Hello! This is a test message."
     leader_input.put(m)
     completed_greenlets = gevent.joinall(threads, timeout=0.5)
-    expected_rbc_result = None if leader == bad_node_id and tag == 'VAL' else m
+    expected_rbc_result = None if leader == byznode and tag == 'VAL' else m
     assert all([t.value == expected_rbc_result for t in threads])
 
 
